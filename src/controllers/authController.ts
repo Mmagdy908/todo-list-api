@@ -12,6 +12,29 @@ export const register = catchAsync(
 
     const user = userMapper.mapRegisterResponse(await authService.userRegister(body));
 
+    //TODO
+    // send verification email
     res.status(201).json({ status: 'success', data: { user } });
+  }
+);
+
+export const login = catchAsync(
+  async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    const credentials = userMapper.mapLoginRequest(req.body);
+
+    checkRequiredFields(credentials, 'email', 'password');
+
+    const loggedUserData = await authService.userLogin(credentials);
+
+    res.status(200).json({
+      status: 'success',
+      data: {
+        user: userMapper.mapLoginResponse(
+          loggedUserData.user,
+          loggedUserData.accessToken,
+          loggedUserData.refreshToken
+        ),
+      },
+    });
   }
 );
