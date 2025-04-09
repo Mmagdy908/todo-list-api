@@ -4,7 +4,8 @@
   "description": "A Todo List API in express.js.",
   "main": "app.ts",
   "scripts": {
-    "start": "nodemon src/app.ts"
+    "start": "nodemon src/app.ts",
+    "start:prod": "SET NODE_ENV=production&&nodemon src/app.ts"
   },
   "repository": {
     "type": "git",
@@ -28,8 +29,10 @@
     "@types/dotenv": "^6.1.1",
     "@types/express": "^5.0.1",
     "@types/mongoose": "^5.11.96",
+    "@types/morgan": "^1.9.9",
     "@types/node": "^22.13.13",
     "@types/validator": "^13.12.3",
+    "morgan": "^1.10.0",
     "nodemon": "^3.1.9",
     "ts-node": "^10.9.2",
     "typescript": "^5.8.2"

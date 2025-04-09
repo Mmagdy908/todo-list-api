@@ -31,7 +31,7 @@ const userSchema = new Schema<User>(
       minlength: [8, 'Password must have 8 characters at least'],
     },
   },
-  { timestamps: true, toObject: { virtuals: true }, toJSON: { virtuals: true } }
+  { timestamps: true, toObject: { virtuals: true }, toJSON: { virtuals: true } },
 );
 
 userSchema.virtual('fullName').get(function () {
