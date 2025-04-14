@@ -29,3 +29,11 @@ export const mapLoginResponse = (
 
   return { id, firstName, lastName, fullName, email, accessToken, refreshToken, createdAt };
 };
+
+// export const mapRefreshTokenRequest = (userData: {
+//   userId: string;
+//   refreshToken: string;
+// }): RefreshTokenRequest => {
+//   const { userId, refreshToken } = userData;
+//   return { userId, refreshToken };
+// };

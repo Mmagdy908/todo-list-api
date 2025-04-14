@@ -6,8 +6,8 @@ export default async () => {
 
     await mongoose.connect(DB || '');
 
-    console.log('Connected successfully to database');
+    console.log('Connected successfully to MongoDB');
   } catch (err) {
-    console.log('Failed to connect to database', err);
+    console.log('Failed to connect to MongoDB', err);
   }
 };

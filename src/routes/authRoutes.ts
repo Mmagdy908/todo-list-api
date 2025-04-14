@@ -1,9 +1,14 @@
 import express from 'express';
 import * as authController from '../controllers/authController';
+import * as authMiddleware from '../middlewares/authMiddleware';
 
 const router = express.Router();
 
 router.route('/register').post(authController.register);
 router.route('/login').post(authController.login);
+router.route('/refresh-token').post(authController.refreshToken);
 
+router.get('/hello', authMiddleware.protect, (req, res) => {
+  res.status(200).send('Hello from protect');
+});
 export default router;

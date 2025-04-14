@@ -1,4 +1,5 @@
-import { Request, Response, NextFunction } from 'express';
+import { Request, Response, NextFunction, CookieOptions } from 'express';
+import { storeRefreshTokenToCookie } from '../util/authUtil';
 import catchAsync from '../util/catchAsync';
 import * as authService from '../services/authService';
 import * as userMapper from '../mappers/userMapper';
@@ -25,6 +26,29 @@ export const login = catchAsync(
     checkRequiredFields(credentials, 'email', 'password');
 
     const loggedUserData = await authService.userLogin(credentials);
+
+    storeRefreshTokenToCookie(res, loggedUserData.refreshToken);
+
+    res.status(200).json({
+      status: 'success',
+      data: {
+        user: userMapper.mapLoginResponse(
+          loggedUserData.user,
+          loggedUserData.accessToken,
+          loggedUserData.refreshToken
+        ),
+      },
+    });
+  }
+);
+
+export const refreshToken = catchAsync(
+  async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    checkRequiredFields(req.body, 'userId', 'refreshToken');
+
+    const loggedUserData = await authService.refreshToken(req.body.userId, req.body.refreshToken);
+
+    storeRefreshTokenToCookie(res, loggedUserData.refreshToken);
 
     res.status(200).json({
       status: 'success',
