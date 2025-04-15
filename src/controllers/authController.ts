@@ -1,4 +1,4 @@
-import { Request, Response, NextFunction, CookieOptions } from 'express';
+import { Request, Response, NextFunction } from 'express';
 import { storeRefreshTokenToCookie } from '../util/authUtil';
 import catchAsync from '../util/catchAsync';
 import * as authService from '../services/authService';

@@ -14,8 +14,6 @@ import AppError from '../util/appError';
 export const userRegister = async (userData: Partial<User>): Promise<User> => {
   const user = await userRepository.create(userData);
 
-  if (!user) throw new AppError(400, "user can't be created");
-
   return user;
 };
 

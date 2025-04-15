@@ -4,6 +4,7 @@ import morgan from 'morgan';
 import cookieParser from 'cookie-parser';
 import dbConfig from './config/db';
 import authRouter from './routes/authRoutes';
+import taskRouter from './routes/taskRoutes';
 import globalErrorHandler from './controllers/errorController';
 import AppError from './util/appError';
 
@@ -21,7 +22,9 @@ app.use(cookieParser());
 //development loggings
 if (process.env.NODE_ENV === 'development') app.use(morgan('dev'));
 
+// routers
 app.use('/api/v1', authRouter);
+app.use('/api/v1/tasks', taskRouter);
 
 //route not found
 app.use('*', (req, res, next) => {
