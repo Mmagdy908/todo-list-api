@@ -44,6 +44,8 @@ export const login = catchAsync(
 
 export const refreshToken = catchAsync(
   async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    req.body.refreshToken ||= req.cookies.refreshToken;
+
     checkRequiredFields(req.body, 'userId', 'refreshToken');
 
     const loggedUserData = await authService.refreshToken(req.body.userId, req.body.refreshToken);
