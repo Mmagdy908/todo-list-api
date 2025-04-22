@@ -6,5 +6,7 @@ export interface CreateTaskResponse {
   type: string;
   subTasks: string[];
   createdAt: Date;
-  completedAt: Date;
+  completedAt?: Date;
 }
+
+export interface UpdateTaskResponse extends CreateTaskResponse {}

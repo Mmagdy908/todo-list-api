@@ -15,3 +15,10 @@ export interface CreateTaskRequest {
   details: string;
   type: string;
 }
+
+export interface UpdateTaskRequest {
+  title: string;
+  details: string;
+  status: string;
+  subTasks: string[];
+}

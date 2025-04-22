@@ -14,3 +14,15 @@ export const createTask = catchAsync(
     res.status(201).json({ status: 'success', data: { task } });
   }
 );
+
+export const updateTask = catchAsync(
+  async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    const body = taskMapper.mapUpdateTaskRequest(req.body);
+
+    const newTask = taskMapper.mapUpdateTaskResponse(
+      await taskService.updateTask(req.params.id, body)
+    );
+
+    res.status(200).json({ status: 'success', data: { task: newTask } });
+  }
+);

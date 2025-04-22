@@ -8,3 +8,7 @@ export const create = async (taskData: Partial<Task>): Promise<Task> => {
 export const getById = async (id: string): Promise<Task | null> => {
   return await taskModel.findById(id);
 };
+
+export const updateById = async (id: string, newData: Partial<Task>): Promise<Task | null> => {
+  return await taskModel.findByIdAndUpdate(id, newData, { new: true, runValidators: true });
+};

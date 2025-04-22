@@ -6,6 +6,8 @@ const router = express.Router();
 
 //add auth middleware
 //TODO
-router.route('/').post(taskController.createTask);
+router.route('/').post(authMiddleware.protect, taskController.createTask);
+
+router.route('/:id').patch(authMiddleware.protect, taskController.updateTask);
 
 export default router;

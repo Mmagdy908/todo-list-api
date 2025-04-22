@@ -41,4 +41,12 @@ const taskSchema = new Schema<Task>(
   { timestamps: true, toObject: { virtuals: true }, toJSON: { virtuals: true } }
 );
 
+taskSchema.post('findOneAndUpdate', async function (doc) {
+  // Marking task as completed or uncompleted
+  if (doc.status == 'Completed') doc.completedAt ||= new Date();
+  else doc.completedAt = undefined;
+
+  await doc.save();
+});
+
 export default model<Task>('Task', taskSchema);

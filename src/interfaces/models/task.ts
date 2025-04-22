@@ -7,5 +7,5 @@ export interface Task {
   subTasks: string[];
   createdAt: Date;
   updatedAt: Date;
-  completedAt: Date;
+  completedAt?: Date;
 }

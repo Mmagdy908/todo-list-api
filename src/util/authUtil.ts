@@ -19,7 +19,6 @@ export const generateRefreshToken = (userId: string, deviceId: string) => {
 };
 
 export const storeRefreshToken = async (userId: string, deviceId: string, refreshToken: string) => {
-  console.log(deviceId);
   await redis.hSet(`${userId}:${deviceId}`, { refreshToken });
 
   const expireAt = parseInt(process.env.Refresh_TOKEN_EXPIRES_IN?.slice(0, -1) || '30'); // in days
