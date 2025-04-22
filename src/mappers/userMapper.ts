@@ -1,6 +1,8 @@
 import { User } from '../interfaces/models/user';
+import { Workspace } from '../interfaces/models/workspace';
 import { RegisterRequest, LoginRequest } from '../interfaces/requests/user';
 import { RegisterResponse, LoginResponse } from '../interfaces/responses/user';
+import * as workspaceMapper from './workspaceMapper';
 
 export const mapRegisterRequest = (userData: User): RegisterRequest => {
   const { firstName, lastName, email, password } = userData;
@@ -25,15 +27,17 @@ export const mapLoginResponse = (
   accessToken: string,
   refreshToken: string
 ): LoginResponse => {
-  const { id, firstName, lastName, fullName, email, workspaces, createdAt } = userData;
-
+  const { id, firstName, lastName, fullName, email, createdAt } = userData;
+  const workspaces = userData.workspaces as Workspace[];
   return {
     id,
     firstName,
     lastName,
     fullName,
     email,
-    workspaces,
+    workspaces: workspaces.map((workspace) =>
+      workspaceMapper.mapCreateWorkspaceResponse(workspace)
+    ),
     accessToken,
     refreshToken,
     createdAt,

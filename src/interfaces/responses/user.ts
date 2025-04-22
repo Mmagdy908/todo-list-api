@@ -1,3 +1,5 @@
+import { Workspace } from '../models/workspace';
+
 export interface RegisterResponse {
   id: string;
   firstName: string;
@@ -13,7 +15,7 @@ export interface LoginResponse {
   lastName: string;
   fullName: string;
   email: string;
-  workspaces: string[];
+  workspaces: Partial<Workspace>[] | string[];
   accessToken: string;
   refreshToken: string;
   createdAt: Date;
