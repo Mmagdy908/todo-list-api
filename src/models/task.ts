@@ -37,6 +37,11 @@ const taskSchema = new Schema<Task>(
       },
     ],
     completedAt: Date,
+    workspace: {
+      type: String,
+      ref: 'Workspace',
+      required: [true, 'A task must belong to a workspace'],
+    },
   },
   { timestamps: true, toObject: { virtuals: true }, toJSON: { virtuals: true } }
 );

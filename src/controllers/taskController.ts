@@ -1,17 +1,23 @@
 import { Request, Response, NextFunction } from 'express';
 import catchAsync from '../util/catchAsync';
 import checkRequiredFields from '../util/checkRequiredFields';
+import * as workspaceMapper from '../mappers/workspaceMapper';
 import * as taskMapper from '../mappers/taskMapper';
 import * as taskService from '../services/taskService';
 
 export const createTask = catchAsync(
   async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     const body = taskMapper.mapCreateTaskRequest(req.body);
-    checkRequiredFields(body, 'title');
+    checkRequiredFields(body, 'title', 'workspace');
 
-    const newTask = taskMapper.mapCreateTaskResponse(await taskService.createTask(body));
-
-    res.status(201).json({ status: 'success', data: { task: newTask } });
+    const { newTask, newWorkspace } = await taskService.createTask(body);
+    res
+      .status(201)
+      .json({
+        status: 'success',
+        data: { task: taskMapper.mapCreateTaskResponse(newTask) },
+        workspace: workspaceMapper.mapCreateWorkspaceResponse(newWorkspace),
+      });
   }
 );
 

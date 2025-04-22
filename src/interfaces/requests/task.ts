@@ -14,6 +14,7 @@ export interface CreateTaskRequest {
   title: string;
   details: string;
   type: string;
+  workspace: string;
 }
 
 export interface UpdateTaskRequest {

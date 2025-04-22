@@ -30,6 +30,12 @@ const userSchema = new Schema<User>(
       trim: true,
       minlength: [8, 'Password must have 8 characters at least'],
     },
+    workspaces: [
+      {
+        type: String,
+        ref: 'Workspace',
+      },
+    ],
   },
   { timestamps: true, toObject: { virtuals: true }, toJSON: { virtuals: true } }
 );

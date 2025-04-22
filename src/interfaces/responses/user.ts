@@ -13,6 +13,7 @@ export interface LoginResponse {
   lastName: string;
   fullName: string;
   email: string;
+  workspaces: string[];
   accessToken: string;
   refreshToken: string;
   createdAt: Date;

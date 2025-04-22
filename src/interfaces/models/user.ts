@@ -5,6 +5,7 @@ export interface User {
   fullName: string;
   email: string;
   password: string;
+  workspaces: string[];
   createdAt: Date;
   updatedAt: Date;
   checkPassword: (password: string) => Promise<boolean>;

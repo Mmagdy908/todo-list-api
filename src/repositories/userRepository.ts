@@ -12,3 +12,7 @@ export const getById = async (id: string): Promise<User | null> => {
 export const getByEmail = async (email: string): Promise<User | null> => {
   return await userModel.findOne({ email });
 };
+
+export const updateById = async (id: string, newUserData: Partial<User>): Promise<User | null> => {
+  return await userModel.findByIdAndUpdate(id, newUserData, { new: true });
+};

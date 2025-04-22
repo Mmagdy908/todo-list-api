@@ -5,7 +5,8 @@ export interface Task {
   status: string;
   type: string;
   subTasks: string[];
+  completedAt?: Date;
+  workspace: string;
   createdAt: Date;
   updatedAt: Date;
-  completedAt?: Date;
 }

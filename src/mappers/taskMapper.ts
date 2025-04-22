@@ -3,9 +3,9 @@ import { CreateTaskRequest, UpdateTaskRequest } from '../interfaces/requests/tas
 import { CreateTaskResponse, UpdateTaskResponse } from '../interfaces/responses/task';
 
 export const mapCreateTaskRequest = (taskData: Task): CreateTaskRequest => {
-  const { title, details, type } = taskData;
+  const { title, details, type, workspace } = taskData;
 
-  return { title, details, type };
+  return { title, details, type, workspace };
 };
 
 export const mapCreateTaskResponse = (task: Task): CreateTaskResponse => {

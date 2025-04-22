@@ -25,11 +25,22 @@ export const mapLoginResponse = (
   accessToken: string,
   refreshToken: string
 ): LoginResponse => {
-  const { id, firstName, lastName, fullName, email, createdAt } = userData;
+  const { id, firstName, lastName, fullName, email, workspaces, createdAt } = userData;
 
-  return { id, firstName, lastName, fullName, email, accessToken, refreshToken, createdAt };
+  return {
+    id,
+    firstName,
+    lastName,
+    fullName,
+    email,
+    workspaces,
+    accessToken,
+    refreshToken,
+    createdAt,
+  };
 };
 
+export const mapUpdateUserResponse = mapLoginResponse;
 // export const mapRefreshTokenRequest = (userData: {
 //   userId: string;
 //   refreshToken: string;

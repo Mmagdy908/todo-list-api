@@ -4,13 +4,13 @@ import * as authMiddleware from '../middlewares/authMiddleware';
 
 const router = express.Router();
 
-//add auth middleware
-//TODO
-router.route('/').post(authMiddleware.protect, taskController.createTask);
+router
+  .route('/')
+  .post(authMiddleware.protect, authMiddleware.checkWorkspaceOwner, taskController.createTask);
 
 router
   .route('/:id')
-  .patch(authMiddleware.protect, taskController.updateTask)
-  .delete(authMiddleware.protect, taskController.deleteTask);
+  .patch(authMiddleware.protect, authMiddleware.checkTaskOwner, taskController.updateTask)
+  .delete(authMiddleware.protect, authMiddleware.checkTaskOwner, taskController.deleteTask);
 
 export default router;

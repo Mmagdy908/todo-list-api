@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { verifyToken } from '../util/authUtil';
+import * as taskRepository from '../repositories/taskRepository';
 import * as userRepository from '../repositories/userRepository';
 import catchAsync from '../util/catchAsync';
 import AppError from '../util/appError';
@@ -15,7 +16,6 @@ export const protect = catchAsync(
     // 2) verify access token
 
     const payload = await verifyToken(accessToken);
-    console.log(payload);
 
     // 3) check if user exists
     const user = await userRepository.getById(payload.userId);
@@ -25,6 +25,29 @@ export const protect = catchAsync(
     // TODO
 
     req.user = user;
+
+    next();
+  }
+);
+
+export const checkWorkspaceOwner = catchAsync(
+  async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    const { workspaces } = req.user;
+    const { workspace } = req.body;
+    if (workspaces && workspace && !workspaces.includes(workspace))
+      return next(new AppError(401, 'User is not owner of this workspace'));
+
+    next();
+  }
+);
+
+export const checkTaskOwner = catchAsync(
+  async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    const taskId = req.params.id;
+    const task = await taskRepository.getById(taskId);
+
+    if (task && !req.user.workspaces.includes(task.workspace))
+      return next(new AppError(401, 'User is not owner of this task'));
 
     next();
   }
