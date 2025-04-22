@@ -9,9 +9,9 @@ export const createTask = catchAsync(
     const body = taskMapper.mapCreateTaskRequest(req.body);
     checkRequiredFields(body, 'title');
 
-    const task = taskMapper.mapCreateTaskResponse(await taskService.createTask(body));
+    const newTask = taskMapper.mapCreateTaskResponse(await taskService.createTask(body));
 
-    res.status(201).json({ status: 'success', data: { task } });
+    res.status(201).json({ status: 'success', data: { task: newTask } });
   }
 );
 
@@ -19,10 +19,18 @@ export const updateTask = catchAsync(
   async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     const body = taskMapper.mapUpdateTaskRequest(req.body);
 
-    const newTask = taskMapper.mapUpdateTaskResponse(
+    const updatedTask = taskMapper.mapUpdateTaskResponse(
       await taskService.updateTask(req.params.id, body)
     );
 
-    res.status(200).json({ status: 'success', data: { task: newTask } });
+    res.status(200).json({ status: 'success', data: { task: updatedTask } });
+  }
+);
+
+export const deleteTask = catchAsync(
+  async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    await taskService.deleteTask(req.params.id);
+
+    res.status(204).json({ status: 'success', data: null });
   }
 );

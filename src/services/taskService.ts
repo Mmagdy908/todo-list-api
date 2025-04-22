@@ -18,3 +18,9 @@ export const updateTask = async (id: string, newData: Partial<Task>): Promise<Ta
 
   return task;
 };
+
+export const deleteTask = async (id: string): Promise<void> => {
+  const task = await taskRepository.deleteById(id);
+
+  if (!task) throw new AppError(404, 'Task not found');
+};

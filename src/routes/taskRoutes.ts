@@ -8,6 +8,9 @@ const router = express.Router();
 //TODO
 router.route('/').post(authMiddleware.protect, taskController.createTask);
 
-router.route('/:id').patch(authMiddleware.protect, taskController.updateTask);
+router
+  .route('/:id')
+  .patch(authMiddleware.protect, taskController.updateTask)
+  .delete(authMiddleware.protect, taskController.deleteTask);
 
 export default router;
