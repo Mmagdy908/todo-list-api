@@ -12,6 +12,11 @@ router
     authMiddleware.protect,
     authMiddleware.checkWorkspaceOwner,
     workspaceController.getWorkspaceById
+  )
+  .delete(
+    authMiddleware.protect,
+    authMiddleware.checkWorkspaceOwner,
+    workspaceController.deleteWorkspaceById
   );
 
 export default router;

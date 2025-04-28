@@ -19,9 +19,9 @@ export const getById = async (
 
 export const updateById = async (
   id: string,
-  newworkspaceData: Partial<Workspace>
+  newWorkspaceData: Partial<Workspace>
 ): Promise<Workspace | null> => {
-  return await workspaceModel.findByIdAndUpdate(id, newworkspaceData, { new: true });
+  return await workspaceModel.findByIdAndUpdate(id, newWorkspaceData, { new: true });
 };
 
 export const addTask = async (id: string, taskId: string): Promise<Workspace | null> => {
@@ -30,4 +30,8 @@ export const addTask = async (id: string, taskId: string): Promise<Workspace | n
 
 export const removeTask = async (id: string, taskId: string): Promise<Workspace | null> => {
   return await workspaceModel.findByIdAndUpdate(id, { $pull: { tasks: taskId } }, { new: true });
+};
+
+export const deleteById = async (id: string): Promise<Workspace | null> => {
+  return await workspaceModel.findByIdAndDelete(id);
 };

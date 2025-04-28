@@ -37,3 +37,11 @@ export const getWorkspaceById = catchAsync(
     });
   }
 );
+
+export const deleteWorkspaceById = catchAsync(
+  async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    await workspaceService.deleteWorkspaceById(req.params.id, req.user.id);
+
+    res.status(204).json({ status: 'success', data: null });
+  }
+);
