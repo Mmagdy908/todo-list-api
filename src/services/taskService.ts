@@ -4,6 +4,7 @@ import { CreateTaskRequest, UpdateTaskRequest } from '../interfaces/requests/tas
 import * as taskRepository from '../repositories/taskRepository';
 import * as workspaceRepository from '../repositories/workspaceRepository';
 import AppError from '../util/appError';
+import { containSameValues } from '../util/containSameValues';
 
 export const createTask = async (
   taskData: Partial<Task>
@@ -39,10 +40,17 @@ export const addSubtask = async (task: Task, subtaskData: Partial<Task>): Promis
 };
 
 export const updateTask = async (id: string, newData: Partial<Task>): Promise<Task> => {
-  const task = await taskRepository.updateById(id, newData);
+  const task = await taskRepository.getById(id);
   if (!task) throw new AppError(404, 'Task not found');
 
-  return task;
+  // check if trying to add or remove subtasks
+  if (
+    newData.subtasks &&
+    !containSameValues(newData.subtasks as string[], task.subtasks as string[])
+  )
+    throw new AppError(400, "Subtasks can't be added or removed in this route");
+
+  return (await taskRepository.updateById(id, newData)) as Task;
 };
 
 export const deleteTask = async (task: Task): Promise<void> => {

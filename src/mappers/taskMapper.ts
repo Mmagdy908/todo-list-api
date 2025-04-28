@@ -27,7 +27,7 @@ export const mapCreateTaskResponse = (task: Task): CreateTaskResponse => {
 export const mapUpdateTaskRequest = (newTaskData: Task): UpdateTaskRequest => {
   const { title, details, status } = newTaskData;
 
-  const subtasks = newTaskData.subtasks as Task[];
+  const subtasks = newTaskData.subtasks as string[];
 
   return { title, details, status, subtasks };
 };

@@ -26,5 +26,5 @@ export interface UpdateTaskRequest {
   title: string;
   details: string;
   status: string;
-  subtasks: Task[];
+  subtasks: string[];
 }
