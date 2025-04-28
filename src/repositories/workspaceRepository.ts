@@ -27,3 +27,7 @@ export const updateById = async (
 export const addTask = async (id: string, taskId: string): Promise<Workspace | null> => {
   return await workspaceModel.findByIdAndUpdate(id, { $push: { tasks: taskId } }, { new: true });
 };
+
+export const removeTask = async (id: string, taskId: string): Promise<Workspace | null> => {
+  return await workspaceModel.findByIdAndUpdate(id, { $pull: { tasks: taskId } }, { new: true });
+};

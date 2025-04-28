@@ -52,12 +52,7 @@ export const deleteTask = async (task: Task): Promise<void> => {
   await Promise.all(subtasks.map((subtask: string) => taskRepository.deleteById(subtask)));
 
   // delete task from workspace
-  if (task.type === 'Task') {
-    const workspaceTasks = (await workspaceRepository.getById(task.workspace))?.tasks as string[];
-    const index = workspaceTasks.findIndex((taskId) => taskId === task.id);
-    workspaceTasks.splice(index, 1);
-    await workspaceRepository.updateById(task.workspace, { tasks: workspaceTasks });
-  }
+  if (task.type === 'Task') await workspaceRepository.removeTask(task.workspace, task.id);
 
   // deleting task
   await taskRepository.deleteById(task.id);
