@@ -6,9 +6,6 @@
 //   updatedAt: Date;
 // }
 
-import { User } from '../models/user';
-
 export interface CreateWorkspaceRequest {
   title: string;
-  user: User;
 }

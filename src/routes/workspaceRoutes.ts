@@ -6,4 +6,12 @@ const router = express.Router();
 
 router.route('/').post(authMiddleware.protect, workspaceController.createWorkspace);
 
+router
+  .route('/:id')
+  .get(
+    authMiddleware.protect,
+    authMiddleware.checkWorkspaceOwner,
+    workspaceController.getWorkspaceById
+  );
+
 export default router;

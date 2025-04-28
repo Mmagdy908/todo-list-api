@@ -15,7 +15,12 @@ const workspaceScheme = new Schema<Workspace>(
     //   required: [true, 'a workspace must have a user'],
     // },
 
-    tasks: [String],
+    tasks: [
+      {
+        type: String,
+        ref: 'Task',
+      },
+    ],
   },
   { toObject: { virtuals: true }, toJSON: { virtuals: true }, timestamps: true }
 );

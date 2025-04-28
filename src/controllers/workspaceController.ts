@@ -26,3 +26,14 @@ export const createWorkspace = catchAsync(
     });
   }
 );
+
+export const getWorkspaceById = catchAsync(
+  async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    const workspace = await workspaceService.getWorkspaceById(req.params.id);
+
+    res.status(200).json({
+      status: 'success',
+      data: { workspace: workspaceMapper.mapGetWorkspaceResponse(workspace) },
+    });
+  }
+);

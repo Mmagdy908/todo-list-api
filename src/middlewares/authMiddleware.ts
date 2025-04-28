@@ -4,7 +4,6 @@ import * as taskRepository from '../repositories/taskRepository';
 import * as userRepository from '../repositories/userRepository';
 import catchAsync from '../util/catchAsync';
 import AppError from '../util/appError';
-import { Task } from '../interfaces/models/task';
 
 export const protect = catchAsync(
   async (req: Request, res: Response, next: NextFunction): Promise<void> => {
@@ -34,7 +33,7 @@ export const protect = catchAsync(
 export const checkWorkspaceOwner = catchAsync(
   async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     const { workspaces } = req.user;
-    const { workspace } = req.body;
+    const workspace = req.body.workspace || req.params.id;
     if (workspaces && workspace && !workspaces.includes(workspace))
       return next(new AppError(401, 'User is not owner of this workspace'));
 
@@ -52,7 +51,7 @@ export const checkTaskOwner = catchAsync(
     if (task && !req.user.workspaces.includes(task.workspace))
       return next(new AppError(401, 'User is not owner of this task'));
 
-    req.task = task as Task;
+    req.task = task;
     next();
   }
 );
