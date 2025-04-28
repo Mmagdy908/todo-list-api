@@ -5,6 +5,7 @@ import {
   generateRefreshToken,
   storeRefreshToken,
   retrieveRefreshToken,
+  deleteAllRefreshTokens,
 } from '../util/authUtil';
 import { User } from '../interfaces/models/user';
 import { LoginRequest } from '../interfaces/requests/user';
@@ -15,6 +16,23 @@ export const userRegister = async (userData: Partial<User>): Promise<User> => {
   const user = await userRepository.create(userData);
 
   return user;
+};
+
+const login = async (userId: string): Promise<{ accessToken: string; refreshToken: string }> => {
+  // 1) generate access token
+  const accessToken = generateAccessToken(userId);
+
+  // 2) generate refresh token
+  const deviceId = uuidv4();
+  const refreshToken = generateRefreshToken(userId, deviceId);
+
+  // 3) save refresh token to redis
+  await storeRefreshToken(userId, deviceId, refreshToken);
+
+  return {
+    accessToken,
+    refreshToken,
+  };
 };
 
 export const userLogin = async (
@@ -30,15 +48,8 @@ export const userLogin = async (
     throw new AppError(401, 'Incorrect email or password');
   }
 
-  // 3) generate access token
-  const accessToken = generateAccessToken(user.id);
-
-  // 4) generate refresh token
-  const deviceId = uuidv4();
-  const refreshToken = generateRefreshToken(user.id, deviceId);
-
-  // 5) save refresh token to redis
-  await storeRefreshToken(user.id, deviceId, refreshToken);
+  // 3) login
+  const { accessToken, refreshToken } = await login(user.id);
 
   return {
     user,
@@ -81,4 +92,29 @@ export const refreshToken = async (
   await storeRefreshToken(userId, payload.deviceId, newRefreshToken);
 
   return { user, accessToken: newAccessToken, refreshToken: newRefreshToken };
+};
+
+export const updatePassword = async (
+  user: User,
+  oldPassword: string,
+  newPassword: string
+): Promise<{ user: User; accessToken: string; refreshToken: string }> => {
+  // 1) check old password
+  if (!(await user.checkPassword(oldPassword))) throw new AppError(400, 'Wrong old password');
+
+  // 2) check if new password equals old password
+  if (oldPassword === newPassword)
+    throw new AppError(400, "New password can't be the same as your current password");
+
+  // 3) update password
+  user.password = newPassword;
+  // await userRepository.saveUser(user);
+  const newUser = await userRepository.create(user);
+
+  // 4) log out from all devices
+  await deleteAllRefreshTokens(newUser.id);
+
+  // 5) log in user
+  const { accessToken, refreshToken } = await login(user.id);
+  return { user: newUser, accessToken, refreshToken };
 };

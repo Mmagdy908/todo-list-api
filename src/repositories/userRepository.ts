@@ -36,3 +36,8 @@ export const removeWorkspace = async (id: string, workspaceId: string): Promise<
     .findByIdAndUpdate(id, { $pull: { workspaces: workspaceId } }, { new: true })
     .populate({ path: 'workspaces', select: 'title' });
 };
+
+export const saveUser = async (user: User): Promise<void> => {
+  const userDoc = new userModel(user);
+  await userDoc.save();
+};

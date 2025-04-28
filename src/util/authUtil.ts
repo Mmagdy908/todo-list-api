@@ -1,6 +1,8 @@
 import JWT, { Secret, SignOptions } from 'jsonwebtoken';
 import { Request, Response, NextFunction, CookieOptions } from 'express';
 import redis from '../config/redis';
+import { User } from '../interfaces/models/user';
+import * as userMapper from '../mappers/userMapper';
 
 export const generateAccessToken = (userId: string) => {
   const secret: Secret = process.env.JWT_SECRET || '';
@@ -28,6 +30,15 @@ export const storeRefreshToken = async (userId: string, deviceId: string, refres
 
 export const retrieveRefreshToken = async (userId: string, deviceId: string): Promise<string> => {
   return (await redis.hGet(`${userId}:${deviceId}`, 'refreshToken')) || '';
+};
+
+export const deleteRefreshToken = async (userId: string, deviceId: string): Promise<void> => {
+  await redis.hDel(`${userId}:${deviceId}`, 'refreshToken');
+};
+
+export const deleteAllRefreshTokens = async (userId: string): Promise<void> => {
+  const keys = await redis.keys(`${userId}:*`);
+  await Promise.all(keys.map((key) => redis.hDel(key, 'refreshToken')));
 };
 
 export const storeRefreshTokenToCookie = async (
@@ -62,4 +73,20 @@ export const verifyToken = async (token: string): Promise<any> => {
   const secret: Secret = process.env.JWT_SECRET as string;
   const payload = await asyncJwtVerify(token, secret);
   return payload;
+};
+
+export const sendLoginResponse = (
+  res: Response,
+  loggedUserData: { user: User; accessToken: string; refreshToken: string }
+) => {
+  res.status(200).json({
+    status: 'success',
+    data: {
+      user: userMapper.mapLoginResponse(
+        loggedUserData.user,
+        loggedUserData.accessToken,
+        loggedUserData.refreshToken
+      ),
+    },
+  });
 };

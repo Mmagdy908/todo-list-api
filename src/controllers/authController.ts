@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import { storeRefreshTokenToCookie } from '../util/authUtil';
+import { storeRefreshTokenToCookie, sendLoginResponse } from '../util/authUtil';
 import catchAsync from '../util/catchAsync';
 import * as authService from '../services/authService';
 import * as userMapper from '../mappers/userMapper';
@@ -29,16 +29,7 @@ export const login = catchAsync(
 
     storeRefreshTokenToCookie(res, loggedUserData.refreshToken);
 
-    res.status(200).json({
-      status: 'success',
-      data: {
-        user: userMapper.mapLoginResponse(
-          loggedUserData.user,
-          loggedUserData.accessToken,
-          loggedUserData.refreshToken
-        ),
-      },
-    });
+    sendLoginResponse(res, loggedUserData);
   }
 );
 
@@ -52,15 +43,16 @@ export const refreshToken = catchAsync(
 
     storeRefreshTokenToCookie(res, loggedUserData.refreshToken);
 
-    res.status(200).json({
-      status: 'success',
-      data: {
-        user: userMapper.mapLoginResponse(
-          loggedUserData.user,
-          loggedUserData.accessToken,
-          loggedUserData.refreshToken
-        ),
-      },
-    });
+    sendLoginResponse(res, loggedUserData);
+  }
+);
+
+export const changePassword = catchAsync(
+  async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    checkRequiredFields(req.body, 'oldPassword', 'newPassword');
+    const { oldPassword, newPassword } = req.body;
+    const loggedUserData = await authService.updatePassword(req.user, oldPassword, newPassword);
+
+    sendLoginResponse(res, loggedUserData);
   }
 );
