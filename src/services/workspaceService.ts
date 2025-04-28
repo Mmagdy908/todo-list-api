@@ -7,6 +7,7 @@ import * as workspaceRepository from '../repositories/workspaceRepository';
 import * as taskService from '../services/taskService';
 
 import AppError from '../util/appError';
+import { containSameValues } from '../util/containSameValues';
 
 export const createWorkspace = async (
   user: User,
@@ -35,10 +36,14 @@ export const updateWorkspace = async (
   id: string,
   newData: Partial<Workspace>
 ): Promise<Workspace> => {
-  const workspace = await workspaceRepository.updateById(id, newData);
+  const workspace = await workspaceRepository.getById(id);
   if (!workspace) throw new AppError(404, 'This workspace not found');
 
-  return workspace;
+  // check if trying to add or remove tasks
+  if (newData.tasks && !containSameValues(workspace.tasks as string[], newData.tasks as string[]))
+    throw new AppError(400, "Tasks can't be added or removed in this route");
+
+  return (await workspaceRepository.updateById(id, newData)) as Workspace;
 };
 
 export const deleteWorkspaceById = async (id: string, userId: string): Promise<void> => {
