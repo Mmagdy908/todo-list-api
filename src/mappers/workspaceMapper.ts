@@ -1,6 +1,6 @@
 import { Task } from '../interfaces/models/task';
 import { Workspace } from '../interfaces/models/workspace';
-import { CreateWorkspaceRequest } from '../interfaces/requests/workspace';
+import { CreateWorkspaceRequest, UpdateWorkspaceRequest } from '../interfaces/requests/workspace';
 import { CreateWorkspaceResponse, GetWorkspaceResponse } from '../interfaces/responses/workspace';
 import * as taskMapper from './taskMapper';
 
@@ -10,6 +10,14 @@ export const mapCreateWorkspaceRequest = (
   const { title } = WorkspaceData;
 
   return { title };
+};
+
+export const mapUpdateWorkspaceRequest = (
+  WorkspaceData: UpdateWorkspaceRequest
+): UpdateWorkspaceRequest => {
+  const { title, tasks } = WorkspaceData;
+
+  return { title, tasks };
 };
 
 export const mapCreateWorkspaceResponse = (workspace: Workspace): CreateWorkspaceResponse => {

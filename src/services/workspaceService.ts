@@ -31,6 +31,16 @@ export const getWorkspaceById = async (id: string): Promise<Workspace> => {
   return workspace;
 };
 
+export const updateWorkspace = async (
+  id: string,
+  newData: Partial<Workspace>
+): Promise<Workspace> => {
+  const workspace = await workspaceRepository.updateById(id, newData);
+  if (!workspace) throw new AppError(404, 'This workspace not found');
+
+  return workspace;
+};
+
 export const deleteWorkspaceById = async (id: string, userId: string): Promise<void> => {
   const workspace = await workspaceRepository.getById(id, { path: 'tasks' });
   if (!workspace) throw new AppError(404, 'This workspace is not found');

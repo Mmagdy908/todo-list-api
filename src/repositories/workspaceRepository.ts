@@ -21,7 +21,15 @@ export const updateById = async (
   id: string,
   newWorkspaceData: Partial<Workspace>
 ): Promise<Workspace | null> => {
-  return await workspaceModel.findByIdAndUpdate(id, newWorkspaceData, { new: true });
+  return await workspaceModel
+    .findByIdAndUpdate(id, newWorkspaceData, {
+      new: true,
+      runValidators: true,
+    })
+    .populate({
+      path: 'tasks',
+      populate: 'subtasks',
+    });
 };
 
 export const addTask = async (id: string, taskId: string): Promise<Workspace | null> => {

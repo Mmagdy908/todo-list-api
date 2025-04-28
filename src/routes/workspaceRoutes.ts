@@ -13,6 +13,11 @@ router
     authMiddleware.checkWorkspaceOwner,
     workspaceController.getWorkspaceById
   )
+  .patch(
+    authMiddleware.protect,
+    authMiddleware.checkWorkspaceOwner,
+    workspaceController.updateWorkspaceById
+  )
   .delete(
     authMiddleware.protect,
     authMiddleware.checkWorkspaceOwner,
