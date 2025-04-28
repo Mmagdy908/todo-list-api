@@ -44,3 +44,5 @@ export const mapUpdateTaskResponse = (task: Task): UpdateTaskResponse => {
 
   return { id, title, details, status, type, subtasks, createdAt, completedAt };
 };
+
+export const mapGetTaskResponse = mapUpdateTaskResponse;

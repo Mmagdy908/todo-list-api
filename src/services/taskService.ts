@@ -17,6 +17,13 @@ export const createTask = async (
   return { newTask, updatedWorkspace };
 };
 
+export const getTaskById = async (id: string): Promise<Task> => {
+  // check for existence is present in checkTaskOwner middleware
+  const task = (await taskRepository.getById(id, { path: 'subtasks' })) as Task;
+
+  return task;
+};
+
 export const addSubtask = async (task: Task, subtaskData: Partial<Task>): Promise<Task> => {
   // create subtask
   subtaskData.type = 'Subtask';

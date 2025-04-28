@@ -10,6 +10,7 @@ router
 
 router
   .route('/:id')
+  .get(authMiddleware.protect, authMiddleware.checkTaskOwner, taskController.getTaskById)
   .patch(authMiddleware.protect, authMiddleware.checkTaskOwner, taskController.updateTask)
   .delete(authMiddleware.protect, authMiddleware.checkTaskOwner, taskController.deleteTask);
 

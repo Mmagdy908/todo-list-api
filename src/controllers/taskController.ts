@@ -20,6 +20,17 @@ export const createTask = catchAsync(
   }
 );
 
+export const getTaskById = catchAsync(
+  async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    const task = await taskService.getTaskById(req.params.id);
+
+    res.status(200).json({
+      status: 'success',
+      data: { task: taskMapper.mapGetTaskResponse(task) },
+    });
+  }
+);
+
 export const addSubtask = catchAsync(
   async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     const body = taskMapper.mapCreateSubtaskRequest(req.body);
