@@ -7,14 +7,28 @@ import AppError from '../util/appError';
 
 export const createTask = async (
   taskData: Partial<Task>
-): Promise<{ newTask: Task; newWorkspace: Workspace }> => {
+): Promise<{ newTask: Task; updatedWorkspace: Workspace }> => {
   const newTask = await taskRepository.create(taskData);
 
   // add task to list
-  const newWorkspace = await workspaceRepository.addTask(newTask.workspace, newTask.id);
+  const updatedWorkspace = await workspaceRepository.addTask(newTask.workspace, newTask.id);
 
-  if (!newWorkspace) throw new AppError(404, 'This workspace is not found');
-  return { newTask, newWorkspace };
+  if (!updatedWorkspace) throw new AppError(404, 'This workspace is not found');
+  return { newTask, updatedWorkspace };
+};
+
+export const addSubtask = async (task: Task, subtaskData: Partial<Task>): Promise<Task> => {
+  // create subtask
+  subtaskData.type = 'Subtask';
+  const newSubtask = await taskRepository.create(subtaskData);
+
+  // add to parent task
+  const taskSubtasks = task.subtasks as string[];
+  taskSubtasks.push(newSubtask.id);
+
+  const newTask = (await taskRepository.updateById(task.id, { subtasks: taskSubtasks })) as Task;
+
+  return newTask;
 };
 
 export const updateTask = async (id: string, newData: Partial<Task>): Promise<Task> => {
@@ -24,8 +38,20 @@ export const updateTask = async (id: string, newData: Partial<Task>): Promise<Ta
   return task;
 };
 
-export const deleteTask = async (id: string): Promise<void> => {
-  const task = await taskRepository.deleteById(id);
+export const deleteTask = async (task: Task): Promise<void> => {
+  const subtasks = task.subtasks as string[];
 
-  if (!task) throw new AppError(404, 'Task not found');
+  // deleting subtasks
+  await Promise.all(subtasks.map((subtask: string) => taskRepository.deleteById(subtask)));
+
+  // delete task from workspace
+  if (task.type === 'Task') {
+    const workspaceTasks = (await workspaceRepository.getById(task.workspace))?.tasks as string[];
+    const index = workspaceTasks.findIndex((taskId) => taskId === task.id);
+    workspaceTasks.splice(index, 1);
+    await workspaceRepository.updateById(task.workspace, { tasks: workspaceTasks });
+  }
+
+  // deleting task
+  await taskRepository.deleteById(task.id);
 };

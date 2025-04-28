@@ -13,4 +13,8 @@ router
   .patch(authMiddleware.protect, authMiddleware.checkTaskOwner, taskController.updateTask)
   .delete(authMiddleware.protect, authMiddleware.checkTaskOwner, taskController.deleteTask);
 
+router
+  .route('/:taskId/subtasks')
+  .post(authMiddleware.protect, authMiddleware.checkTaskOwner, taskController.addSubtask);
+
 export default router;

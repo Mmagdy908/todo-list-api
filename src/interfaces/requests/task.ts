@@ -10,10 +10,15 @@
 //   completedAt: Date;
 // }
 
+import { Task } from '../models/task';
+
 export interface CreateTaskRequest {
   title: string;
   details: string;
-  type: string;
+  workspace: string;
+}
+export interface CreateSubtaskRequest {
+  title: string;
   workspace: string;
 }
 
@@ -21,5 +26,5 @@ export interface UpdateTaskRequest {
   title: string;
   details: string;
   status: string;
-  subTasks: string[];
+  subtasks: Task[];
 }

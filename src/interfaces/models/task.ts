@@ -4,7 +4,7 @@ export interface Task {
   details: string;
   status: string;
   type: string;
-  subTasks: string[];
+  subtasks: Task[] | string[];
   completedAt?: Date;
   workspace: string;
   createdAt: Date;

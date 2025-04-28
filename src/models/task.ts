@@ -30,7 +30,7 @@ const taskSchema = new Schema<Task>(
       trim: true,
       default: 'Task',
     },
-    subTasks: [
+    subtasks: [
       {
         type: String,
         ref: 'Task',
