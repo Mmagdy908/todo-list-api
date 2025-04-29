@@ -6,19 +6,39 @@ import {
   storeRefreshToken,
   retrieveRefreshToken,
   deleteAllRefreshTokens,
-  generateResetOTP,
-  storeResetOTP,
-  verifyResetOTP,
+  generateOTP,
+  storeOTP,
+  verifyOTP,
 } from '../util/authUtil';
 import sendEmail from '../util/email';
-import { generateResetPasswordEmailTemplate } from '../util/emailTemplate';
+import {
+  generateResetPasswordEmailTemplate,
+  generateVerifyEmailTemplate,
+} from '../util/emailTemplate';
 import { User } from '../interfaces/models/user';
 import { LoginRequest } from '../interfaces/requests/user';
 import * as userRepository from '../repositories/userRepository';
 
 import AppError from '../util/appError';
+
+const sendVerificationEmail = async (userEmail: string, verifyEmailOTP: string) => {
+  await sendEmail(
+    userEmail,
+    'Verify Email OTP (valid for 10 mins)',
+    generateVerifyEmailTemplate(verifyEmailOTP)
+  );
+};
 export const userRegister = async (userData: Partial<User>): Promise<User> => {
+  // 1) create user
   const user = await userRepository.create(userData);
+
+  // 2) generate verify OTP
+  const verifyEmailOTP = await generateOTP();
+
+  await storeOTP(user.id, 'verifyOTP', verifyEmailOTP);
+
+  // 3) send verification email
+  await sendVerificationEmail(user.email, verifyEmailOTP);
 
   return user;
 };
@@ -40,6 +60,24 @@ const login = async (userId: string): Promise<{ accessToken: string; refreshToke
   };
 };
 
+export const verifyEmail = async (id: string, verifyEmailOTP: string) => {
+  // 1) get user
+  const user = await userRepository.getById(id);
+  if (!user) throw new AppError(404, 'User Not Found');
+
+  // 2) verify otp
+  if (!(await verifyOTP(id, 'verifyOTP', verifyEmailOTP)))
+    throw new AppError(400, 'Invalid verification OTP ');
+
+  // 3) set user as verified
+  const newUser = (await userRepository.updateById(id, { isVerified: true })) as User;
+
+  // 4) login
+  const { accessToken, refreshToken } = await login(id);
+
+  return { user: newUser, accessToken, refreshToken };
+};
+
 export const userLogin = async (
   credentials: LoginRequest
 ): Promise<{ user: User; accessToken: string; refreshToken: string }> => {
@@ -53,7 +91,21 @@ export const userLogin = async (
     throw new AppError(401, 'Incorrect email or password');
   }
 
-  // 3) login
+  // 3) check if user is verified
+
+  if (!user.isVerified) {
+    //  generate verify OTP
+    const verifyEmailOTP = await generateOTP();
+
+    await storeOTP(user.id, 'verifyOTP', verifyEmailOTP);
+
+    //  send verification email
+    await sendVerificationEmail(user.email, verifyEmailOTP);
+
+    throw new AppError(401, 'This email is not verified. An OTP is sent to your email');
+  }
+
+  // 4) login
   const { accessToken, refreshToken } = await login(user.id);
 
   return {
@@ -131,9 +183,9 @@ export const forgotPassword = async (email: string): Promise<void> => {
   if (!user) return; // DO NOT throw error to prevent email leakage
 
   // 2) generate reset OTP
-  const resetOTP = await generateResetOTP();
+  const resetOTP = await generateOTP();
 
-  await storeResetOTP(user.id, resetOTP);
+  await storeOTP(user.id, 'resetOTP', resetOTP);
 
   // 3) send email
 
@@ -154,7 +206,7 @@ export const resetPassword = async (
 
   // 2) verify reset token
 
-  if (!user || !(await verifyResetOTP(user?.id, resetOTP)))
+  if (!user || !(await verifyOTP(user?.id, 'resetOTP', resetOTP)))
     throw new AppError(400, 'Invalid reset password OTP ');
 
   // 3) reset password

@@ -4,6 +4,7 @@ import catchAsync from '../util/catchAsync';
 import * as authService from '../services/authService';
 import * as userMapper from '../mappers/userMapper';
 import checkRequiredFields from '../util/checkRequiredFields';
+import user from '../models/user';
 
 export const register = catchAsync(
   async (req: Request, res: Response, next: NextFunction): Promise<void> => {
@@ -13,11 +14,19 @@ export const register = catchAsync(
 
     const user = userMapper.mapRegisterResponse(await authService.userRegister(body));
 
-    //TODO
-    // send verification email
-    res.status(201).json({ status: 'success', data: { user } });
+    res
+      .status(201)
+      .json({ status: 'success', data: { user }, message: 'Please verify your email' });
   }
 );
+
+export const verifyEmail = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+  checkRequiredFields(req.body, 'userId', 'verifyEmailOTP');
+
+  const loggedUserData = await authService.verifyEmail(req.body.userId, req.body.verifyEmailOTP);
+
+  sendLoginResponse(res, loggedUserData);
+});
 
 export const login = catchAsync(
   async (req: Request, res: Response, next: NextFunction): Promise<void> => {

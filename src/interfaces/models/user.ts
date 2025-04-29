@@ -9,6 +9,7 @@ export interface User {
   password: string;
   passwordUpdatedAt: Date;
   workspaces: Workspace[] | string[];
+  isVerified: boolean;
   createdAt: Date;
   updatedAt: Date;
   checkPassword: (password: string) => Promise<boolean>;

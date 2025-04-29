@@ -5,6 +5,7 @@ import * as authMiddleware from '../middlewares/authMiddleware';
 const router = express.Router();
 
 router.route('/register').post(authController.register);
+router.route('/verify-email').post(authController.verifyEmail);
 router.route('/login').post(authController.login);
 router.route('/refresh-token').post(authController.refreshToken);
 router.route('/change-password').post(authMiddleware.protect, authController.changePassword);

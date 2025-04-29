@@ -37,6 +37,10 @@ const userSchema = new Schema<User>(
         ref: 'Workspace',
       },
     ],
+    isVerified: {
+      type: Boolean,
+      default: false,
+    },
   },
   { timestamps: true, toObject: { virtuals: true }, toJSON: { virtuals: true } }
 );
