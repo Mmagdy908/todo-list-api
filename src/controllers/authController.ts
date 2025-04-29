@@ -56,3 +56,30 @@ export const changePassword = catchAsync(
     sendLoginResponse(res, loggedUserData);
   }
 );
+
+export const forgotPassword = catchAsync(
+  async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    checkRequiredFields(req.body, 'email');
+
+    await authService.forgotPassword(req.body.email);
+    res.status(200).json({
+      status: 'success',
+      message: 'A link is sent to your email',
+    });
+  }
+);
+
+export const resetPassword = catchAsync(
+  async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    checkRequiredFields(req.body, 'email', 'resetOTP', 'newPassword');
+
+    const { email, resetOTP, newPassword } = req.body;
+
+    await authService.resetPassword(email, resetOTP, newPassword);
+
+    res.status(200).json({
+      status: 'success',
+      message: 'Password is reset successfuly. Please Log in',
+    });
+  }
+);

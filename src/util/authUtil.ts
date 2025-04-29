@@ -3,6 +3,9 @@ import { Request, Response, NextFunction, CookieOptions } from 'express';
 import redis from '../config/redis';
 import { User } from '../interfaces/models/user';
 import * as userMapper from '../mappers/userMapper';
+import crypto from 'crypto';
+import bcrypt from 'bcrypt';
+import appError from './appError';
 
 export const generateAccessToken = (userId: string) => {
   const secret: Secret = process.env.JWT_SECRET || '';
@@ -39,6 +42,31 @@ export const deleteRefreshToken = async (userId: string, deviceId: string): Prom
 export const deleteAllRefreshTokens = async (userId: string): Promise<void> => {
   const keys = await redis.keys(`${userId}:*`);
   await Promise.all(keys.map((key) => redis.hDel(key, 'refreshToken')));
+};
+
+export const generateResetOTP = async (): Promise<string> => {
+  const resetOTP = `${crypto.randomInt(100000, 999999)}`;
+  return resetOTP;
+};
+
+export const storeResetOTP = async (userId: string, resetOTP: string) => {
+  const hash = await bcrypt.hash(resetOTP, Number(process.env.SALT));
+
+  await redis.hSet(userId, { resetOTP: hash });
+
+  const expiresAt = Number(process.env.PASSWORD_RESET_OTP_EXPIRES_AT?.slice(0, -1)); // in mins
+
+  await redis.expire(userId, expiresAt * 60);
+};
+
+export const verifyResetOTP = async (userId: string, resetOTP: string) => {
+  const hash = await redis.hGet(userId, 'resetOTP');
+
+  if (!hash || !(await bcrypt.compare(resetOTP, hash))) return false;
+
+  await redis.hDel(userId, 'resetOTP');
+
+  return true;
 };
 
 export const storeRefreshTokenToCookie = async (

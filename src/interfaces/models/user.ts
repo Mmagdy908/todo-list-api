@@ -7,6 +7,7 @@ export interface User {
   fullName: string;
   email: string;
   password: string;
+  passwordUpdatedAt: Date;
   workspaces: Workspace[] | string[];
   createdAt: Date;
   updatedAt: Date;

@@ -30,6 +30,7 @@ const userSchema = new Schema<User>(
       trim: true,
       minlength: [8, 'Password must have 8 characters at least'],
     },
+    passwordUpdatedAt: Date,
     workspaces: [
       {
         type: String,

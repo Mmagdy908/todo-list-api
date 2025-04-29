@@ -6,7 +6,12 @@ import {
   storeRefreshToken,
   retrieveRefreshToken,
   deleteAllRefreshTokens,
+  generateResetOTP,
+  storeResetOTP,
+  verifyResetOTP,
 } from '../util/authUtil';
+import sendEmail from '../util/email';
+import { generateResetPasswordEmailTemplate } from '../util/emailTemplate';
 import { User } from '../interfaces/models/user';
 import { LoginRequest } from '../interfaces/requests/user';
 import * as userRepository from '../repositories/userRepository';
@@ -117,4 +122,47 @@ export const updatePassword = async (
   // 5) log in user
   const { accessToken, refreshToken } = await login(user.id);
   return { user: newUser, accessToken, refreshToken };
+};
+
+export const forgotPassword = async (email: string): Promise<void> => {
+  // 1) get user
+  const user = await userRepository.getByEmail(email);
+
+  if (!user) return; // DO NOT throw error to prevent email leakage
+
+  // 2) generate reset OTP
+  const resetOTP = await generateResetOTP();
+
+  await storeResetOTP(user.id, resetOTP);
+
+  // 3) send email
+
+  await sendEmail(
+    user.email,
+    'Reset Password OTP (valid for 10 mins)',
+    generateResetPasswordEmailTemplate(resetOTP)
+  );
+};
+
+export const resetPassword = async (
+  email: string,
+  resetOTP: string,
+  newPassword: string
+): Promise<void> => {
+  // 1) get user
+  const user = await userRepository.getByEmail(email);
+
+  // 2) verify reset token
+
+  if (!user || !(await verifyResetOTP(user?.id, resetOTP)))
+    throw new AppError(400, 'Invalid reset password OTP ');
+
+  // 3) reset password
+  user.password = newPassword;
+  user.passwordUpdatedAt = new Date();
+
+  await userRepository.saveUser(user);
+
+  // 4) log out from all devices
+  await deleteAllRefreshTokens(user.id);
 };
