@@ -138,13 +138,10 @@ export const refreshToken = async (
   });
   if (!user) throw new AppError(400, 'User does not exist');
 
-  // 5) check if user changed password after token creation
-  // TODO
-
-  // 6) generate access token
+  // 5) generate access token
   const newAccessToken = generateAccessToken(userId);
 
-  // 7) rotate refresh token
+  // 6) rotate refresh token
   const newRefreshToken = generateRefreshToken(userId, payload.deviceId);
   await storeRefreshToken(userId, payload.deviceId, newRefreshToken);
 
@@ -165,7 +162,6 @@ export const updatePassword = async (
 
   // 3) update password
   user.password = newPassword;
-  // await userRepository.saveUser(user);
   const newUser = await userRepository.create(user);
 
   // 4) log out from all devices

@@ -22,7 +22,8 @@ export const protect = catchAsync(
     if (!user) return next(new AppError(401, 'User does not exist'));
 
     // 4) check if user changed password after token creation
-    // TODO
+    if (user.passwordUpdatedAt && user.passwordUpdatedAt > payload.iat)
+      throw new AppError(401, 'Invalid access token ');
 
     req.user = user;
 
