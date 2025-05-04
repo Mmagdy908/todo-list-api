@@ -30,7 +30,7 @@ A full-featured Todo List backend built using **Node.js**, **Express**, **TypeSc
 
 ## 📬 API Documentation
 
-🔗 [Postman Collection](https://your-postman-doc-link)
+🔗 [Postman Collection](https://documenter.getpostman.com/view/41198842/2sB2j68VBR)
 
 ---
 
